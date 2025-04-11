@@ -2,17 +2,21 @@
 import { Request, Response } from "express";
 import User from "./user.model";
 import { asyncHandler } from "../../utils/asyncHandler";
+import ErrorHandler from "../../utils/errorHandler";
 
 // Register a new user
 export const registerUser = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response, next: any): Promise<void> => {
     const { name, phone, email, password, role } = req.body;
+
+    if (!name || !phone || !email || !password || !role) {
+      return next(new ErrorHandler(400, "All fields are required"));
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(400).json({ message: "User already exists" });
-      return;
+      return next(new ErrorHandler(400, "User already exists"));
     }
 
     // Create new user
@@ -35,7 +39,7 @@ export const registerUser = asyncHandler(
 
 // Login user
 export const loginUser = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response, next: any): Promise<void> => {
     const { email, password } = req.body;
 
     // Find user by email
@@ -51,7 +55,7 @@ export const loginUser = asyncHandler(
         role: user.role,
       });
     } else {
-      res.status(401).json({ message: "Invalid email or password" });
+      return next(new ErrorHandler(401, "Invalid email or password"));
     }
   }
 );

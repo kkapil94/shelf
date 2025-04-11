@@ -5,6 +5,7 @@ import logger from "./utils/logger";
 import connectDB from "./db";
 import errorMiddleware from "./middlewares/apiHandler";
 import userRoutes from "./modules/user/user.routes";
+import bookRoutes from "./modules/book/book.routes";
 
 const app: Application = express();
 const morganFormat = ":method :url :status :response-time ms";
@@ -36,6 +37,7 @@ app.get("/api/v1", (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/book", bookRoutes);
 
 app.use(errorMiddleware);
 
