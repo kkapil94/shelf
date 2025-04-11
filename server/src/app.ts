@@ -2,10 +2,14 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import logger from "./utils/logger";
+import connectDB from "./db";
+import errorMiddleware from "./middlewares/apiHandler";
+import userRoutes from "./modules/user/user.routes";
 
 const app: Application = express();
 const morganFormat = ":method :url :status :response-time ms";
 
+connectDB();
 app.use(express.json({ limit: "50kb" }));
 app.use(express.urlencoded({ limit: "50kb", extended: true }));
 app.use(cors({ credentials: true, origin: "*" }));
@@ -30,5 +34,9 @@ app.get("/api/v1", (req: Request, res: Response, next: NextFunction) => {
     message: "Server is running",
   });
 });
+
+app.use("/api/v1/user", userRoutes);
+
+app.use(errorMiddleware);
 
 export default app;
