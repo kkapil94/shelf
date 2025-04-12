@@ -1,6 +1,6 @@
-// components/Navbar.tsx
+"use client";
 import Link from "next/link";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const { state, logout } = useAuth();
@@ -26,9 +26,11 @@ const Navbar = () => {
                 </Link>
               )}
 
-              <Link href="/dashboard" className="hover:text-blue-200">
-                Dashboard
-              </Link>
+              {user?.role === "owner" && (
+                <Link href="/dashboard" className="hover:text-blue-200">
+                  Dashboard
+                </Link>
+              )}
 
               <button
                 onClick={logout}
