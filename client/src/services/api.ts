@@ -15,12 +15,14 @@ const api = axios.create({
 // User API
 export const registerUser = async (userData: {
   name: string;
-  phone: string;
+  phone: number;
   email: string;
   password: string;
   role: "owner" | "seeker";
 }): Promise<User> => {
-  const response = await api.post("/users/register", userData);
+  console.log({ userData });
+  const response = await api.post("/user/register", userData);
+  console.log({ response });
   return response.data;
 };
 
@@ -28,7 +30,7 @@ export const loginUser = async (credentials: {
   email: string;
   password: string;
 }): Promise<User> => {
-  const response = await api.post("/users/login", credentials);
+  const response = await api.post("/user/login", credentials);
   return response.data;
 };
 

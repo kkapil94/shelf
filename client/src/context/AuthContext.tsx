@@ -8,7 +8,8 @@ import {
 } from "react";
 import { User, AuthState } from "../types";
 import { loginUser, registerUser } from "../services/api";
-import Router from "next/navigation";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 // Define action types
 type AuthAction =
@@ -69,7 +70,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (
     name: string,
-    mobileNumber: string,
+    phone: number,
     email: string,
     password: string,
     role: "owner" | "seeker"
@@ -82,6 +83,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Create provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const router = useRouter();
 
   // Check if user is already logged in
   useEffect(() => {
@@ -104,9 +106,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Redirect based on role
       if (user.role === "owner") {
-        Router.redirect("/dashboard");
+        router.push("/dashboard");
       } else {
-        Router.redirect("/books");
+        router.push("/books");
       }
     } catch (error: any) {
       dispatch({
@@ -119,7 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Register function
   const register = async (
     name: string,
-    phone: string,
+    phone: number,
     email: string,
     password: string,
     role: "owner" | "seeker"
@@ -133,16 +135,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password,
         role,
       });
+      console.log({ user });
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: "REGISTER_SUCCESS", payload: user });
+      toast.success("Registration successful");
 
-      // Redirect based on role
-      if (user.role === "owner") {
-        Router.redirect("/dashboard");
-      } else {
-        Router.redirect("/books");
-      }
+      router.push("/login");
     } catch (error: any) {
+      console.log({ error });
+      toast.error(error.response?.data?.message || "Registration failed");
       dispatch({
         type: "REGISTER_FAILURE",
         payload: error.response?.data?.message || "Registration failed",
@@ -154,7 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("user");
     dispatch({ type: "LOGOUT" });
-    Router.redirect("/login");
+    router.push("/login");
   };
 
   return (
