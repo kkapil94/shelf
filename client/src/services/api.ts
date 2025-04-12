@@ -36,12 +36,12 @@ export const loginUser = async (credentials: {
 
 // Book API
 export const getBooks = async (): Promise<Book[]> => {
-  const response = await api.get("/books");
+  const response = await api.get("/book");
   return response.data;
 };
 
 export const getBookById = async (id: string): Promise<Book> => {
-  const response = await api.get(`/books/${id}`);
+  const response = await api.get(`/book/${id}`);
   return response.data;
 };
 
