@@ -17,6 +17,20 @@ export const getBooks = asyncHandler(
   }
 );
 
+export const getSingleBook = asyncHandler(
+  async (req: Request, res: Response, next: any): Promise<void> => {
+    const { id } = req.params;
+    const book = await Book.findById(id).populate(
+      "owner",
+      "name email mobileNumber"
+    );
+    if (!book) {
+      return next(new ErrorHandler(404, "Book not found"));
+    }
+    res.status(200).json(book);
+  }
+);
+
 // Create a new book listing
 export const createBook = asyncHandler(
   async (req: Request, res: Response, next: any): Promise<void> => {
