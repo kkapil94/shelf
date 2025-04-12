@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const user = await loginUser({ email, password });
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: "LOGIN_SUCCESS", payload: user });
+      toast.success("Login successful");
 
       // Redirect based on role
       if (user.role === "owner") {
@@ -111,6 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         router.push("/books");
       }
     } catch (error: any) {
+      toast.error(error.response?.data?.message || "Login failed");
       dispatch({
         type: "LOGIN_FAILURE",
         payload: error.response?.data?.message || "Login failed",

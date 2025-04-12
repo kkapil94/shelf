@@ -1,11 +1,10 @@
 // pages/login.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import Head from "next/head";
 
 type LoginInputs = {
   email: string;
@@ -14,7 +13,7 @@ type LoginInputs = {
 
 const Login = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, state } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,7 +29,7 @@ const Login = () => {
 
     try {
       await login(data.email, data.password);
-      router.push("/dashboard");
+      setIsSubmitting(false);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -41,12 +40,18 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    const user = state.user;
+    if (user?.role === "owner") {
+      router.push("/dashboard");
+    } else if (user?.role === "seeker") {
+      router.push("/books");
+    }
+  });
+
   return (
     <>
-      <Head>
-        <title>Login - Book Exchange</title>
-      </Head>
-      <div className="max-w-md mx-auto bg-white p-8 rounded shadow-md">
+      <div className="max-w-md mx-auto bg-white p-8 rounded shadow-md mt-8">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
         {error && (

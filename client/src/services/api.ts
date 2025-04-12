@@ -53,16 +53,18 @@ export const createBook = async (bookData: {
   contactInfo: string;
   ownerId: string;
 }): Promise<Book> => {
-  const response = await api.post("/books", bookData);
+  const response = await api.post("/book", bookData);
   return response.data;
 };
 
 export const updateBookAvailability = async (
   bookId: string,
-  isAvailable: boolean
+  isAvailable: boolean,
+  ownerId: string
 ): Promise<Book> => {
-  const response = await api.put(`/books/${bookId}/availability`, {
+  const response = await api.put(`/book/${bookId}/availability`, {
     isAvailable,
+    ownerId,
   });
   return response.data;
 };
